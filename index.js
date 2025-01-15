@@ -98,11 +98,24 @@ async function run() {
       res.send(result);
     });
 
+    // get single admissionForm
+    app.get("/admission-form/:id", async (req, res) => {
+      const id = req.params.id;
+      const admissionData = await admissionFormCollection.findOne({
+        _id: new ObjectId(id),
+      });
+      res.send(admissionData);
+    });
 
-
-
-
-
+    // delete single admissionForm
+    app.delete("/admission-form/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const result = await admissionFormCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
 
 
 
