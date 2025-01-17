@@ -82,7 +82,7 @@ async function run() {
 
     // admissionForm routes
 
-    //post admissionForm
+    //post admission-form
     app.post("/admission-form", async (req, res) => {
       const admissionFormData = req.body;
       console.log(req.body);
@@ -91,14 +91,14 @@ async function run() {
     });
 
 
-    // get all admissionForm
+    // get all admission-form
     app.get("/admission-form", async (req, res) => {
       const allAdmissionFormData = admissionFormCollection.find();
       const result = await allAdmissionFormData.toArray();
       res.send(result);
     });
 
-    // get single admissionForm
+    // get single admission-form
     app.get("/admission-form/:id", async (req, res) => {
       const id = req.params.id;
       const admissionData = await admissionFormCollection.findOne({
@@ -106,6 +106,19 @@ async function run() {
       });
       res.send(admissionData);
     });
+
+    // Update single admission-form
+    app.put("/admission-form/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedStudentForm = req.body;
+      console.log(id, updatedStudentForm)
+      const result = await admissionFormCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedStudentForm }
+      );
+      res.send(result);
+    });
+
 
     // delete single admissionForm
     app.delete("/admission-form/:id", async (req, res) => {
