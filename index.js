@@ -31,6 +31,7 @@ async function run() {
     const db = client.db("NatidangaSchoolDB");
     const teachersCollection = db.collection("teachersCollection");
     const admissionFormCollection = db.collection("admissionFormCollection");
+    const studentResultsCollection = db.collection("studentResultsCollection");
 
     // teachers route
 
@@ -78,8 +79,6 @@ async function run() {
       res.send(result);
     });
 
-
-
     // admissionForm routes
 
     //post admission-form
@@ -89,7 +88,6 @@ async function run() {
       const result = await admissionFormCollection.insertOne(admissionFormData);
       res.send(result);
     });
-
 
     // get all admission-form
     app.get("/admission-form", async (req, res) => {
@@ -111,14 +109,13 @@ async function run() {
     app.put("/admission-form/:id", async (req, res) => {
       const id = req.params.id;
       const updatedStudentForm = req.body;
-      console.log(id, updatedStudentForm)
+      console.log(id, updatedStudentForm);
       const result = await admissionFormCollection.updateOne(
         { _id: new ObjectId(id) },
         { $set: updatedStudentForm }
       );
       res.send(result);
     });
-
 
     // delete single admissionForm
     app.delete("/admission-form/:id", async (req, res) => {
@@ -132,6 +129,58 @@ async function run() {
 
 
 
+
+
+    // Student Report
+
+    // get all admission-form
+    app.get("/student-results", async (req, res) => {
+      const allStudentReportData = studentResultsCollection.find();
+      const result = await allStudentReportData.toArray();
+      res.send(result);
+    });
+
+    // get single student report by type
+    // api example : GET http://localhost:5000/student-results/report?id=2&reportType="Half Year Report"
+    app.get("/student-results/report", async (req, res) => {
+      const { id, reportType  } = req.query;
+      console.log(id, reportType)
+      const reportData = await studentResultsCollection.findOne({
+        studentId: id,
+        reportType: reportType,
+      });
+      res.send(reportData);
+    });
+
+    // Get multiple student reports by matching studentId
+    app.get("/student-results-all/:id", async (req, res) => {
+      const id = req.params.id;
+      try {
+        // Find all documents where studentId matches the provided id
+        const reportData = await studentResultsCollection
+          .find({ studentId: id })
+          .toArray();
+
+        // Send the array of matching documents as the response
+        res.send(reportData);
+      } catch (err) {
+        // Handle errors
+        res.status(500).send({ error: "Failed to fetch student results" });
+      }
+    });
+
+    // Endpoint to add student results
+    app.post("/student-results", async (req, res) => {
+      try {
+        const resultData = req.body; // Data sent from the frontend
+        console.log("Received student result data:", resultData);
+        const result = await studentResultsCollection.insertOne(resultData); // Insert into the collection
+        res.send(result);
+      } catch (error) {
+        console.error("Error saving student result:", error);
+        res.status(500).send({ error: "Failed to save student result" });
+      }
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
