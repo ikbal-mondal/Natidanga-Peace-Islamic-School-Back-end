@@ -127,10 +127,6 @@ async function run() {
       res.send(result);
     });
 
-
-
-
-
     // Student Report
 
     // get all admission-form
@@ -143,8 +139,8 @@ async function run() {
     // get single student report by type
     // api example : GET http://localhost:5000/student-results/report?id=2&reportType="Half Year Report"
     app.get("/student-results/report", async (req, res) => {
-      const { id, reportType  } = req.query;
-      console.log(id, reportType)
+      const { id, reportType } = req.query;
+      console.log(id, reportType);
       const reportData = await studentResultsCollection.findOne({
         studentId: id,
         reportType: reportType,
