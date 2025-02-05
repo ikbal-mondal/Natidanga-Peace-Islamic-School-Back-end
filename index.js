@@ -96,6 +96,24 @@ async function run() {
       res.send(result);
     });
 
+    // get student  by class
+    // api example : GET http://localhost:5000/admission-form/class?class=One
+    app.get("/admission-form/class", async (req, res) => {
+      try {
+        const classQuery = req.query.class; // Grab the query parameter from URL
+        console.log(classQuery);
+
+        const studentData = await admissionFormCollection
+          .find({ class: classQuery })
+          .toArray();
+        // console.log(studentData);
+        res.send(studentData);
+      } catch (error) {
+        console.error("Error fetching admission forms:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
     // get single admission-form
     app.get("/admission-form/:id", async (req, res) => {
       const id = req.params.id;
@@ -129,7 +147,7 @@ async function run() {
 
     // Student Report
 
-    // get all admission-form
+    // get all student result
     app.get("/student-results", async (req, res) => {
       const allStudentReportData = studentResultsCollection.find();
       const result = await allStudentReportData.toArray();
