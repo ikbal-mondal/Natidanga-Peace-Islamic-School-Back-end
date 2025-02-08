@@ -32,6 +32,7 @@ async function run() {
     const teachersCollection = db.collection("teachersCollection");
     const admissionFormCollection = db.collection("admissionFormCollection");
     const studentResultsCollection = db.collection("studentResultsCollection");
+    const organizerCollection = db.collection("organizerCollection");
 
     // teachers route
 
@@ -194,6 +195,52 @@ async function run() {
         console.error("Error saving student result:", error);
         res.status(500).send({ error: "Failed to save student result" });
       }
+    });
+
+    // organizer route
+
+    //post single organizer
+    app.post("/organizers", async (req, res) => {
+      const organizerData = req.body;
+      const result = await organizerCollection.insertOne(organizerData);
+      res.send(result);
+    });
+
+    // get all organizers
+    app.get("/organizers", async (req, res) => {
+      const organizersData = organizerCollection.find();
+      const result = await organizersData.toArray();
+      res.send(result);
+    });
+
+    // get single organizer
+    app.get("/organizers/:id", async (req, res) => {
+      const id = req.params.id;
+      const organizerData = await organizerCollection.findOne({
+        _id: new ObjectId(id),
+      });
+
+      res.send(organizerData);
+    });
+
+    // Update single organizer
+    app.put("/organizers/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedOrganizer = req.body;
+      const result = await organizerCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedOrganizer }
+      );
+      res.send(result);
+    });
+
+    // delete single organizer
+    app.delete("/organizers/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await organizerCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
     });
   } finally {
     // Ensures that the client will close when you finish/error
